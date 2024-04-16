@@ -172,5 +172,45 @@ int tree_postOrder (FILE *f, const BSTree * tree){
     return _bst_postOrder_rec(tree->root, f, tree->print_ele) + fprintf(f, "\n");
 }
 
+void * tree_find_min (BSTree * tree){
+    if (!tree) return NULL;
+    
+    BSTNode *nAux = tree->root;
+
+    while (nAux->left != NULL)
+        nAux = nAux->left;
+
+    return nAux->info;
+}
+
+void * tree_find_max (BSTree * tree){
+    if (!tree) return NULL;
+    
+    BSTNode *nAux = tree->root;
+    while (nAux->right != NULL)
+        nAux = nAux->right;
+
+    return nAux->info;
+}
+
+Bool tree_contains (BSTree * tree, const void * elem){
+    if (!tree||!elem) return FALSE;
+    int result = 0; 
+    result = tree->cmp_ele(elem, tree->root->info);
+    
+    if (result==0) return TRUE;
+    if (result < 0)
+        return tree_contains_rec(tree->root->left, elem);
+
+    return tree_contains_rec(tree->root->right, elem);  
+}
+
+Bool tree_contains_rec (BSTNode * node, const void * elem, P_tree_ele_cmp f){
+    int result = 0; 
+    result = f(elem, BSTNode->info);
+    if (result==0) return TRUE;
+
+}
+
 
 /**** TODO: find_min, find_max, insert, contains, remove ****/
