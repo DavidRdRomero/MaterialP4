@@ -263,8 +263,31 @@ Status tree_remove(BSTree *tree, const void *elem)
     {
         return ERROR;
     }
-
-    if ((tree->cmp_ele(tree->root->info, elem)) == 0)
+    n = tree->root;
+    if ((tree->cmp_ele(n->info, elem)) == 0)
     {
+        if (!n->right && !n->left)
+        {
+            _bst_node_free(n);
+            return OK;
+        }
+        else if (!n->right)
+        {
+            tree->root = n->left;
+            _bst_node_free(n);
+            return OK;
+        }
+        else if (!n->left)
+        {
+            tree->root = n->right;
+            _bst_node_free(n);
+            return OK;
+        }
+        else if (n->right && n->left)
+        {
+            zzz
+        }
     }
 }
+
+BSTNode *tree_remove_rec(BSTNode *node, )
