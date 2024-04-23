@@ -197,5 +197,12 @@ Status tree_insert (BSTree * tree, const void * elem);
 */
 Status tree_remove (BSTree * tree, const void * elem);
 
+/**
+* @brief Recursive function that prints 
+*
+* @param tree Pointer to the Tree.
+*/
+void tree_print (BSTree *t);
+
 
 #endif
