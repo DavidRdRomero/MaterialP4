@@ -139,6 +139,8 @@ void tree_print_rec(BSTNode *node, P_tree_ele_print print_ele);
 
 void *tree_find_min_rec(BSTNode *node);
 
+void *tree_find_max_rec(BSTNode *node);
+
 BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f);
 
 /*** BSTree TAD functions ***/
@@ -248,11 +250,24 @@ void *tree_find_max(BSTree *tree)
     if (!tree)
         return NULL;
 
-    BSTNode *nAux = tree->root;
-    while (nAux->right != NULL)
-        nAux = nAux->right;
+    return tree_find_max_rec(tree->root);
+}
 
-    return nAux->info;
+void *tree_find_max_rec(BSTNode *node)
+{
+    void *info;
+    if (!node)
+    {
+        return NULL;
+    }
+
+    if (node->right == NULL)
+    {
+        return node->info;
+    }
+
+    info = tree_find_max_rec(node->right);
+    return info;
 }
 
 Bool tree_contains(BSTree *tree, const void *elem)
@@ -317,11 +332,9 @@ BSTNode *tree_insert_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
 }
 
 void tree_print(BSTree *t)
-{ ////////////////////CONTROL DE ERRORRESSSS DE ROOT INVALIDO
+{
     if (!t)
         return;
-    t->print_ele(stdout, t->root->info);
-    printf("\n");
     tree_print_rec(t->root, t->print_ele);
     return;
 }
@@ -331,12 +344,15 @@ void tree_print_rec(BSTNode *node, P_tree_ele_print print_ele)
     if (node == NULL)
         return;
 
-    if (node->left != NULL && node->right != NULL)
-    { /////NO SE CONTEMPLA SOLO UN NODO POR LADO, CHECKEAR SI EL PADRE TIENE NODO DERECHO ANTES DE |N
+    print_ele(stdout, node->info);
+    printf("\n");
+
+    /*if (node->left != NULL && node->right != NULL)
+    {
         print_ele(stdout, node->left->info);
         print_ele(stdout, node->right->info);
         printf("\n");
-    }
+    }*/
     if (node->left != NULL)
         tree_print_rec(node->left, print_ele);
 

@@ -79,6 +79,7 @@ void tree_print_rec();
 int main (int argc, char *argv[]){
  
     FILE *f = NULL;
+    Point *p = NULL;
     BSTree *t = NULL;
     if (argc != 2){
         printf("Numero de argumentos invalido\n");
@@ -91,6 +92,13 @@ int main (int argc, char *argv[]){
         return 1;
     }
         
+    p = point_new(5, 3, '+');
+    if (p == NULL){
+        printf("Error al crear puntos\n");
+        fclose(f);
+        return 1;
+    }
+
     if ((t = tree_read_points_from_file(f)) == NULL){
         printf("Error al leer puntos del fichero\n");
         fclose(f);
@@ -99,6 +107,12 @@ int main (int argc, char *argv[]){
     fclose(f);
 
     printf("Imprimiendo el árbol de %s\n", argv[1]);
+    tree_print(t);
+
+    printf("elimina");
+    tree_remove(t, p);
+    
+
     tree_print(t);
 
     
