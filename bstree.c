@@ -423,7 +423,7 @@ BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
     {
         if (!node->right && !node->left)
         {
-            _bst_node_free(node);
+            _bst_node_free_2(node);
             return NULL;
         }
         else if (node->right && node->left)
@@ -436,7 +436,7 @@ BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
         else if (node->right)
         {
             node_aux = node->right;
-            _bst_node_free_rec(node);
+            _bst_node_free(node);
             return node_aux;
         }
         else if (node->left)
