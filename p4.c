@@ -3,7 +3,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define ERROR -6
 
 int int_cmp(const void *int1, const void *int2)
 {
@@ -12,7 +11,7 @@ int int_cmp(const void *int1, const void *int2)
 
     if (!int1 || !int2)
     {
-        return ERROR;
+        return 0;
     }
 
     i1 = *((int *)int1);
@@ -80,13 +79,13 @@ int point_cmp(const void *p1, const void *p2)
 
 BSTree *tree_read_points_from_file(FILE *pf);
 
-void tree_print_rec();
+void tree_print_level();
 
 int main(int argc, char *argv[])
 {
-
+    char results[10];
     FILE *f = NULL;
-    Point *p = NULL;
+    Point *p = NULL, *p2 = NULL, *p3 = NULL, *samplePoint = NULL;
     BSTree *t = NULL;
     if (argc != 2)
     {
@@ -94,15 +93,70 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    samplePoint = point_new(4, 3, '+');
+
+    printf("Pruebas del TAD BSTree:\n==================================\nPruebas simples: \n\n");
+    
+    tree_insert(NULL, samplePoint) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Insertar a árbol nulo: %s\n", results);
+
+    tree_remove(NULL, samplePoint) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Eliminar de un árbol nulo: %s\n", results);
+
+    tree_contains(t, NULL) == FALSE ? strcpy(results, "PASS") : strcpy(results, "FAIL"); 
+    printf("Buscar en un árbol nulo: %s\n", results);
+
+    tree_find_min(NULL) == FALSE ? strcpy(results, "PASS") : strcpy(results, "FAIL"); 
+    printf("Buscar elemento mínimo en un árbol nulo: %s\n", results);
+
+    tree_find_max(NULL) == FALSE ? strcpy(results, "PASS") : strcpy(results, "FAIL"); 
+    printf("Buscar elemento máximo en un árbol nulo: %s\n", results);
+
+    tree_insert(t, samplePoint) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Insertar a árbol sin inicializar: %s\n", results);
+
+    tree_remove(t, samplePoint) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Eliminar de un árbol sin inicializar: %s\n", results);
+
+    tree_contains(t, NULL) == FALSE ? strcpy(results, "PASS") : strcpy(results, "FAIL"); 
+    printf("Buscar elemento nulo en un árbol: %s\n", results);
+
+    t = tree_init(point_print, point_cmp);
+    if (!t)
+    {
+        printf("Error al inicializar el árbol");
+        return 1;
+    }
+
+    tree_insert(t, NULL) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL"); 
+    printf("Insertar elemento nulo a un árbol: %s\n", results);
+
+    tree_remove(t, NULL) == ERROR ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Eliminar un elemento inválido: %s\n", results);
+
+    tree_insert(t, samplePoint) == OK ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Inserción normal: %s\nTree: \n", results);
+    tree_print(t);
+
+    tree_remove(t, samplePoint) == OK ? strcpy(results, "PASS") : strcpy(results, "FAIL");
+    printf("Eliminación normal: %s\nTree: \n", results);
+    tree_print(t);
+    printf("\n");
+
+    tree_destroy_full(t);
+
+    printf("Leyendo árbol de archivo %s: ", argv[1]);
     f = fopen(argv[1], "r");
     if (f == NULL)
     {
         printf("Error al abrir el archivo\n");
         return 1;
     }
-
+    printf("OK\n");
     p = point_new(6, 5, '+');
-    if (p == NULL)
+    p2 = point_new(1, 1, '+');
+    p3 = point_new(5, 3, '+');
+    if (!p || !p2 || !p3)
     {
         printf("Error al crear puntos\n");
         fclose(f);
@@ -120,13 +174,35 @@ int main(int argc, char *argv[])
     printf("Imprimiendo el árbol de %s\n", argv[1]);
     tree_print(t);
 
-    printf("elimina 4 3 + \n");
+    printf("Eliminando el punto [(6, 5): +] \n");
     tree_remove(t, p);
-
     tree_print(t);
 
-    point_free(p);
+    printf("Eliminando el punto [(1, 1): +] \n");
+    tree_remove(t, p2);
+    tree_print(t);
+
+    printf("Eliminando el punto [(5, 3): +] \n");
+    tree_remove(t, p3);
+    tree_print(t);
+
+
+    tree_contains(t, samplePoint) == TRUE ? strcpy(results, "Sí") : strcpy(results, "No"); 
+    printf("\n¿Está [(4, 3): +] en el árbol?: %s\n", results);
+
+    printf("El elemento mínimo en el árbol final es "); 
+    point_print(stdout, tree_find_min(t));
+    printf("\n");
+
+    printf("El elemento máximo en el árbol final es "); 
+    point_print(stdout, tree_find_max(t));
+    printf("\n");
+
     tree_destroy_full(t);
+    point_free(samplePoint);
+    point_free(p);
+    point_free(p2);
+    point_free(p3);
     return 0;
 }
 

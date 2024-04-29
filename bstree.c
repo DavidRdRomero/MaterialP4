@@ -153,7 +153,7 @@ Bool tree_contains_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f);
 
 BSTNode *tree_insert_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f);
 
-void tree_print_rec(BSTNode *node, P_tree_ele_print print_ele);
+void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int depth, int level);
 
 void *tree_find_min_rec(BSTNode *node);
 
@@ -362,32 +362,45 @@ BSTNode *tree_insert_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
 
 void tree_print(BSTree *t)
 {
+    int i, j, depth;
     if (!t)
         return;
-    tree_print_rec(t->root, t->print_ele);
+    if (!t->root){
+        printf("\nTree is empty\n");
+        return;
+    }
+    depth = tree_depth(t);
+    for (i=0; i<depth; i++){
+        
+        for (j=0; j<depth-i; j++){
+            printf("           ");
+        }
+        if ((j+4)%2==0) {
+            printf("     ");
+        }
+        tree_print_level(t->root, t->print_ele, depth, i);
+        printf("\n");
+    }
+    
     return;
 }
 
-void tree_print_rec(BSTNode *node, P_tree_ele_print print_ele)
-{
-    if (node == NULL)
+void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int depth, int level){
+    
+    if (node == NULL){
+        printf("    ");
         return;
+    }
 
-    print_ele(stdout, node->info);
-    printf("\n");
+    if (depth == 0)
+        print_ele(stdout,node->info);
 
-    /*if (node->left != NULL && node->right != NULL)
-    {
-        print_ele(stdout, node->left->info);
-        print_ele(stdout, node->right->info);
-        printf("\n");
-    }*/
-    if (node->left != NULL)
-        tree_print_rec(node->left, print_ele);
-
-    if (node->right != NULL)
-        tree_print_rec(node->right, print_ele);
-    return;
+    else {
+        tree_print_level(node->left, print_ele, depth, level-1);
+        printf("           ");
+        tree_print_level(node->right, print_ele, depth, level-1);
+        
+    }
 }
 
 Status tree_remove(BSTree *tree, const void *elem)
@@ -404,7 +417,7 @@ Status tree_remove(BSTree *tree, const void *elem)
 BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
 {
     int cmp;
-    void *aux;
+    void *aux, *deleter;
     BSTNode *node_aux = NULL;
     if (!node || !elem)
     {
@@ -412,7 +425,7 @@ BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
     }
     cmp = f(elem, node->info);
     if (cmp < 0)
-    {
+    {   
         node->left = tree_remove_rec(node->left, elem, f);
     }
     else if (cmp > 0)
@@ -423,12 +436,14 @@ BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
     {
         if (!node->right && !node->left)
         {
-            _bst_node_free_2(node);
+            _bst_node_free(node);
             return NULL;
         }
         else if (node->right && node->left)
         {
             aux = tree_find_min_rec(node->right);
+            deleter = node->info;
+            free(deleter);
             node->info = aux;
             node->right = tree_remove_rec(node->right, aux, f);
             return node;
@@ -436,13 +451,13 @@ BSTNode *tree_remove_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
         else if (node->right)
         {
             node_aux = node->right;
-            _bst_node_free(node);
+            _bst_node_free_2(node);
             return node_aux;
         }
         else if (node->left)
         {
             node_aux = node->left;
-            _bst_node_free(node);
+            _bst_node_free_2(node);
             return node_aux;
         }
     }
