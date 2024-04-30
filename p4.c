@@ -153,9 +153,9 @@ int main(int argc, char *argv[])
         return 1;
     }
     printf("OK\n");
-    p = point_new(6, 5, '+');
-    p2 = point_new(1, 1, '+');
-    p3 = point_new(5, 3, '+');
+    p = point_new(2, 1, '+');
+    p2 = point_new(4, 2, '+');
+    p3 = point_new(5, 2, '+');
     if (!p || !p2 || !p3)
     {
         printf("Error al crear puntos\n");
@@ -174,15 +174,21 @@ int main(int argc, char *argv[])
     printf("Imprimiendo el árbol de %s\n", argv[1]);
     tree_print(t);
 
-    printf("Eliminando el punto [(6, 5): +] \n");
+    printf("\nEliminando el punto ");
+    point_print(stdout, p);
+    printf ("\n\n");
     tree_remove(t, p);
     tree_print(t);
 
-    printf("Eliminando el punto [(1, 1): +] \n");
+    printf("\nEliminando el punto ");
+    point_print(stdout, p2);
+    printf ("\n\n");
     tree_remove(t, p2);
     tree_print(t);
 
-    printf("Eliminando el punto [(5, 3): +] \n");
+    printf("\nEliminando el punto ");
+    point_print(stdout, p3);
+    printf ("\n\n");
     tree_remove(t, p3);
     tree_print(t);
 

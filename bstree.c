@@ -153,7 +153,7 @@ Bool tree_contains_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f);
 
 BSTNode *tree_insert_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f);
 
-void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int depth, int level);
+void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int level, int numspaces, Bool left);
 
 void *tree_find_min_rec(BSTNode *node);
 
@@ -362,7 +362,7 @@ BSTNode *tree_insert_rec(BSTNode *node, const void *elem, P_tree_ele_cmp f)
 
 void tree_print(BSTree *t)
 {
-    int i, j, depth;
+    int i, depth;
     if (!t)
         return;
     if (!t->root){
@@ -372,35 +372,69 @@ void tree_print(BSTree *t)
     depth = tree_depth(t);
     for (i=0; i<depth; i++){
         
-        for (j=0; j<depth-i; j++){
-            printf("           ");
-        }
-        if ((j+4)%2==0) {
-            printf("     ");
-        }
-        tree_print_level(t->root, t->print_ele, depth, i);
+        if(i==0)
+        printf("                                              ");
+        else if (i == 1)
+        printf("                    ");
+        else if (i == 2)
+        printf("       ");
+        tree_print_level(t->root, t->print_ele, i, 41, FALSE);
         printf("\n");
     }
     
     return;
 }
 
-void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int depth, int level){
+void tree_print_level(BSTNode *node, P_tree_ele_print print_ele, int level, int numspaces, Bool left){
     
+    int i;
     if (node == NULL){
-        printf("    ");
+        if (left == TRUE){
+            printf("           ");
+            for (i=0; i<numspaces; i++)
+            printf(" ");
+            
+            printf("           ");
+        }
         return;
     }
 
-    if (depth == 0)
+    if (level == 0){
         print_ele(stdout,node->info);
-
-    else {
-        tree_print_level(node->left, print_ele, depth, level-1);
-        printf("           ");
-        tree_print_level(node->right, print_ele, depth, level-1);
-        
     }
+    else if (level == 1){
+        if (node->left)
+            print_ele(stdout, node->left->info);
+        else 
+            printf("           ");
+        
+        for (i=0; i<numspaces; i++)
+            printf(" ");
+
+        if (node->right)
+            print_ele(stdout, node->right->info);
+        else 
+            printf("           ");
+    }
+    else if (level == 2){
+        tree_print_level(node->left, print_ele, level -1, 15, TRUE);
+        for (i=0; i<15; i++)
+            printf(" ");
+        tree_print_level(node->right, print_ele, level -1, 15, FALSE);
+    }
+    else if (level == 3){
+        tree_print_level(node->left->left, print_ele, 1, 2, TRUE);
+        for (i=0; i<2; i++)
+            printf(" ");
+        tree_print_level(node->left->right, print_ele, 1, 2, TRUE);
+        for (i=0; i<2; i++)
+            printf(" ");
+        tree_print_level(node->right->left, print_ele, 1, 2, TRUE);
+        for (i=0; i<2; i++)
+            printf(" ");
+        tree_print_level(node->right->right, print_ele, 1, 2, FALSE);
+    }
+    return;
 }
 
 Status tree_remove(BSTree *tree, const void *elem)
